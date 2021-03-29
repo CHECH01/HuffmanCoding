@@ -1,3 +1,5 @@
+package HuffmanCoding;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 
