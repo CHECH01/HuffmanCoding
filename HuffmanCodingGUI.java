@@ -37,10 +37,6 @@ public class HuffmanCodingGUI extends JFrame {
     HuffmanCoding hc= new HuffmanCoding();
     String[][] data;
     String[] column;
-    private int clicks = 0;
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -53,12 +49,6 @@ public class HuffmanCodingGUI extends JFrame {
 			}
 		});
 	}
-
-	/**
-	 * Create the frame.
-	 */
-	
-	
 	
 	public HuffmanCodingGUI() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,7 +57,6 @@ public class HuffmanCodingGUI extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new GridLayout(1, 0, 0, 0));
-		
 		
 		contentPane.add(panel);
 		panel.setLayout(null);
@@ -98,17 +87,41 @@ public class HuffmanCodingGUI extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                clicks++;
-                auxiliar();
+                onClickBtnEncrypt();
             } 
         });
 	}
-    public void auxiliar(){
-        if(clicks >1){
+    public void onClickBtnEncrypt(){
+        try{
             panel_1.remove(sp);
-        }
+        }catch(Exception e){}
         hc.setText(textField.getText());
         hc.launch();
+        fillTable();
+		table = new JTable(data,column);
+        table.setDefaultEditor(Object.class, null);
+        table.setFont(new Font("Tahoma", Font.PLAIN, 16));        
+        table.setColumnSelectionAllowed(true);
+        table.setRowHeight(30);
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+        table.getColumn("-").setPreferredWidth(75);
+        table.getColumnModel().getColumn(column.length-1).setCellRenderer(centerRenderer);
+		for(int i = 0; i < column.length-1;i++){
+            table.getColumn(String.valueOf(i)).setPreferredWidth(10);
+            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        table.setDefaultRenderer(String.class, centerRenderer);
+        
+        sp=new JScrollPane(table);
+        sp.setBounds(0, 0, 750, 203);
+		panel_1.add(sp);
+
+        label2.setText("Encrypted text: ");
+        label.setText(hc.getEncryptedText());
+        btnTree.setVisible(true);
+    }
+    public void fillTable(){
         int[][] aux = hc.getMatrix().clone();
 		data=new String[6][aux[0].length+1];
         char[] aux2 = hc.getSymbols().clone();
@@ -138,29 +151,5 @@ public class HuffmanCodingGUI extends JFrame {
         for(int i = 1; i < column.length; i++){
             column[i] = String.valueOf(i-1);
         }
-        
-		
-		table = new JTable(data,column);
-        table.setFont(new Font("Tahoma", Font.PLAIN, 16));        
-        table.setColumnSelectionAllowed(true);
-        table.setRowHeight(30);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment( JLabel.CENTER );
-        table.getColumn("-").setPreferredWidth(75);
-        table.getColumnModel().getColumn(column.length-1).setCellRenderer(centerRenderer);
-		for(int i = 0; i < column.length-1;i++){
-            table.getColumn(String.valueOf(i)).setPreferredWidth(10);
-            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-        
-        table.setDefaultRenderer(String.class, centerRenderer);
-        
-        sp=new JScrollPane(table);
-        sp.setBounds(0, 0, 750, 203);
-		panel_1.add(sp);
-
-        label2.setText("Encrypted text: ");
-        label.setText(hc.getEncryptedText());
-        btnTree.setVisible(true);
     }
 }
