@@ -6,27 +6,26 @@ public class HuffmanCoding {
     int matrix[][];
     char[] symbols;
     String text;
+    String text2;
     String encryptedText;
+    String encryptedSymbols[];
     
     public void launch() {
         symbols = removeDuplicates(text);
         matrix = new int[5][symbols.length * 2 - 1];
-        
         Arrays.sort(symbols);
         int[] frecuencys = getFrecuencys(text, String.valueOf(symbols));
 
         for(int[] row:matrix){
             Arrays.fill(row, 0);
         }
-        
         for(int i = 0; i < symbols.length; i++){
             matrix[0][i] = frecuencys[i];
         }
 
         fillMatrix(symbols.length);
-        System.out.println();
-        String encryptedSymbols[] = encrypt(symbols.length);
-        encryptedText = encryptedText(symbols, text, encryptedSymbols);
+        encryptedSymbols = encrypt(symbols.length);
+        encryptedText = encryptText(symbols, text, encryptedSymbols);
     }
     public char[] removeDuplicates(String text) {
         String letters = "";
@@ -37,20 +36,19 @@ public class HuffmanCoding {
         }
         return letters.toCharArray();
     }
-    public String encryptedText(char symbols[], String text, String[] encryptedSymbols){
-        int j = 0;
+    public String encryptText(char symbols[], String text, String[] encryptedSymbols){
         String encryptedText = "";
+        text2 = "";
+        int aux = 0, c;
         for(int i = 0; i < text.length(); i++){
-            doCycle:
-            do{
-                if(symbols[j] == text.charAt(i)){
-                    encryptedText += encryptedSymbols[j];
-                    break doCycle;
-                 }
-                 j++;
-            }while(j < symbols.length);
-            encryptedText += " ";
-            j = 0;
+            c = Arrays.binarySearch(symbols, text.charAt(i));
+            encryptedText += encryptedSymbols[c];
+            text2 += symbols[c];
+            while(aux < encryptedSymbols[c].length()-1){
+                text2 += " ";
+                aux++;
+            }
+            aux = 0;
         }
         return encryptedText;
     }
@@ -58,7 +56,7 @@ public class HuffmanCoding {
     public int[] getFrecuencys(String text, String symbols) {
         int frecuencys [] = new int[symbols.length()];
         for (int i = 0; i < symbols.length(); i++) {
-            frecuencys [i] = text.length() - text.replaceAll(String.valueOf(symbols.charAt(i)), "").length();
+            frecuencys [i] = text.length() - text.replaceAll(String.valueOf(symbols.charAt(i)), "").length();   
         }
         return frecuencys;
     }
@@ -69,13 +67,13 @@ public class HuffmanCoding {
         do{
             izq = getNode(column,frecuencys);
             der = getNode(column,frecuencys);
-            matrix[0][column] = izq[0]+der[0];
-            matrix[3][column] = izq[1];
-            matrix[4][column] = der[1];
-            matrix[1][izq[1]] = column;
-            matrix[1][der[1]] = column;
-            matrix[2][izq[1]] = 1;
-            matrix[2][der[1]] = 2;
+            matrix[0][column] = izq[0]+der[0]; //frecuency
+            matrix[1][izq[1]] = column;        //Parent izq
+            matrix[1][der[1]] = column;        //Parent der
+            matrix[2][izq[1]] = 1;             //Type izq
+            matrix[2][der[1]] = 2;             //Type der
+            matrix[3][column] = izq[1];        //izq
+            matrix[4][column] = der[1];        //der
             frecuencys[column] = izq[0]+der[0];
             column++;
         }while(column < matrix[0].length);
@@ -89,36 +87,18 @@ public class HuffmanCoding {
                 break;
             }
         }
+        //get smaller frecuency
         for(int i = 0; i < symbolsSize; i++){
-            if(frecuencys[i] < node[0] && frecuencys[i]>0){
+            if(frecuencys[i] < node[0] && frecuencys[i] > 0){
                 node[0] = matrix[0][i];
                 node[1] = i;
             }
         }
         frecuencys[node[1]] = 0;
         return node;
-    }
-    public void printMatrix(int columns,char[]symbols){
-        for(int i = 0; i < 7; i++){
-            for(int j = 0; j < columns ;j++){
-                if(i == 0){
-                    System.out.print(j+" ");    
-                }
-                else if(i == 1){
-                    System.out.print(symbols[j]+" ");
-                    if(j == symbols.length-1){
-                        break;
-                    }
-                }else{
-                    System.out.print(matrix[i-2][j]+" ");
-                }
-            }
-            System.out.println();
-        }
-    }
+    }    
     public String[] encrypt(int size){
         String[] encryptedSymbols = new String[size];
-        Arrays.fill(encryptedSymbols, "");
         for(int i = 0; i < size; i++){
             encryptedSymbols[i] = encodeSymbol(i);
         }
@@ -142,17 +122,8 @@ public class HuffmanCoding {
     public int[][] getMatrix() {
         return matrix;
     }
-    public void setMatrix(int[][] matrix) {
-        this.matrix = matrix;
-    }
     public char[] getSymbols() {
         return symbols;
-    }
-    public void setSymbols(char[] symbols) {
-        this.symbols = symbols;
-    }
-    public String getText() {
-        return text;
     }
     public void setText(String text) {
         this.text = text;
@@ -160,7 +131,16 @@ public class HuffmanCoding {
     public String getEncryptedText() {
         return encryptedText;
     }
-    public void setEncryptedText(String encryptedText) {
-        this.encryptedText = encryptedText;
+    public String getText2() {
+        return text2;
+    }
+    public void setText2(String text2) {
+        this.text2 = text2;
+    }
+    public String[] getEncryptedSymbols() {
+        return encryptedSymbols;
+    }
+    public void setEncryptedSymbols(String[] encryptedSymbols) {
+        this.encryptedSymbols = encryptedSymbols;
     }
 }
